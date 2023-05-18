@@ -1,37 +1,16 @@
 const Joi = require('joi');
 
 const productSchema = Joi.object({
-  name: Joi.string()
-  .required()
-  .messages({
-    'any.required': 'Product name is required',
-    'string.empty': 'Product name cannot be empty',
-  }),
-  price: Joi.number()
-  .required()
-  .messages({
-    'number.base': 'Price must be a numeric value',
-    'any.required': 'Price is required',
-  }),
-  quantity: Joi.number()
-  .required()
-  .messages({
-    'number.base': 'Quantity must be a numeric value',
-    'any.required': 'Quantity is required',
-  }),
-  description: Joi.string()
-  .required()
-  .messages({
-    'string.empty': 'Product description is required',
-    'any.required': 'Product description is required',
-  }),
+  name: Joi.string().required().label('name'),
+  price: Joi.number().required(),
+  quantity: Joi.number().required(),
+  description: Joi.string().required(),
   image: Joi.string(), // Not required
-  categoryId: Joi.number()
-  .required()
-  .messages({
-    'number.base': 'Category ID must be a numeric value',
-    'any.required': 'Category ID is required',
-  }),
+  categoryId: Joi.number().required(),
+}).messages({
+    'string.empty': '{#label} is required',
+    'any.required': '{#label} is required',
+    'number.base': '{#label} must be a numeric value',
 });
 
 module.exports = productSchema
