@@ -11,9 +11,30 @@ async function getAll(req, res) {
                   attributes: ['name']
                 }
               ],
-              attributes: { exclude: ['categoryId'] }
+            attributes: { exclude: ['categoryId'] }
         }); 
         res.status(200).json(products);
+      } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Internal Server Error' });
+      }
+}
+
+async function getOne(req, res) {
+    const { id } = req.params;
+
+    try {
+        const product = await Product.findOne({ 
+            where: { id },
+            include: [
+                {
+                  model: Category,
+                  attributes: ['name']
+                }
+              ],
+            attributes: { exclude: ['categoryId'] }
+        }); 
+        res.status(200).json(product);
       } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Internal Server Error' });
@@ -48,7 +69,6 @@ async function createProduct(req, res) {
 }
 
 async function updateProduct(req, res) {
-    console.log(req.path)
     const {error} = productSchema.validate(req.body);
     
     if (error) {
@@ -128,6 +148,7 @@ async function deleteProduct(req, res) {
 
 module.exports = {
     getAll,
+    getOne,
     createProduct,
     updateProduct,
     deleteProduct

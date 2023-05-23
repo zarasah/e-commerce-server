@@ -28,14 +28,14 @@ async function register(req, res) {
         const salt = await bcrypt.genSalt(saltRounds);
         const hashedPassword = await bcrypt.hash(password, salt);
 
-        await User.create({
+        const newUser = await User.create({
             firstname,
             lastname,
             email,
             password: hashedPassword
         })
 
-        return res.status(201).json({ message: 'User registered successfully' });
+        return res.status(201).json({ message: 'User registered successfully', newUser });
     } catch(error) {
         console.error(error);
         return res.status(500).json({ message: 'Internal Server Error' });

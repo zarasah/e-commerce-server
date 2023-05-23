@@ -3,9 +3,22 @@ const { Product } = require('../models');
 const categorySchema = require('../validation/categorySchema');
 
 async function getAll(req, res) {
+    console.log('ALL')
     try {
         const categories = await Category.findAll(); 
         res.status(200).json(categories);
+      } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Internal Server Error' });
+      }
+}
+
+async function getOne(req, res) {
+    const { id } = req.params;
+    console.log(id)
+    try {
+        const category = await Category.findOne({ where: { id } }); 
+        res.status(200).json(category);
       } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Internal Server Error' });
@@ -86,6 +99,7 @@ async function deleteCategory(req, res) {
 
 module.exports = {
     getAll,
+    getOne,
     createCategory,
     updateCategory,
     deleteCategory
