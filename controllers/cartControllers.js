@@ -40,7 +40,8 @@ async function getOne(req, res) {
 }
 
 async function createCart(req, res) {
-    const { id } = req.body;
+    // const { id } = req.body;
+    const { id } = req.user;
     
     try {
         const user = await User.findOne({ where: { id } });

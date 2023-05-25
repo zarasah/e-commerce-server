@@ -11,7 +11,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       Cart.belongsTo(models.User)
-      Cart.belongsToMany(models.Product, { through: 'Cart_Item'})
+      Cart.belongsToMany(models.Product, { through: 'Cart_Item', foreignKey: 'cartId' })
     }
   }
   Cart.init({
