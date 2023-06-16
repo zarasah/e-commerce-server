@@ -1,7 +1,9 @@
 const { Cart, Product, Cart_Item} = require('../models');
+const { Op } = require('sequelize');
 
 async function showCart(req, res) {
-  const userId = req.user.id;
+  // const userId = req.body.id; // req.user.id
+  const userId = req.query.userId;
 
   Cart.findOne({ where: { userId } })
   .then(cart => {
@@ -10,13 +12,16 @@ async function showCart(req, res) {
         where: { cartId: cart.id },
         include: {
           model: Product,
-          attributes: ['name'],
+          attributes: ['id', 'name', 'price', 'image'],
         },
         attributes: ['count'],
       })
         .then(cartProducts => {
           const products = cartProducts.map(cp => ({
+            id: cp.Product.id,
             name: cp.Product.name,
+            price: cp.Product.price,
+            image: cp.Product.image,
             count: cp.count,
           }));
           res.status(200).json({ products });
@@ -52,9 +57,9 @@ async function showCart(req, res) {
 }
 
 async function addToCart(req, res) {
-  const userId = req.user.id;
-  const productId = req.body.id;
-
+  const userId = req.body.userId;
+  const productId = req.body.productId;
+  console.log(userId, productId)
   Cart.findOne({ where: { userId } })
   .then((cart) => {
     if (cart) {
@@ -126,9 +131,9 @@ async function addToCart(req, res) {
   // }
 }
 
-async function removeFromCart(req, res) {
-  const userId = req.user.id;
-  const productId = req.body.id;
+async function updateCartItem(req, res) {
+  const userId = req.body.userId;
+  const productId = req.body.productId;
 
   Cart.findOne({ where: { userId } })
   .then(cart => {
@@ -136,15 +141,24 @@ async function removeFromCart(req, res) {
       Cart_Item.findOne({ where: { cartId: cart.id, productId } })
         .then(cartProduct => {
           if (cartProduct) {
-            return cartProduct.destroy();
+            if (cartProduct.count === 1) {
+              cartProduct.destroy();
+              // return res.status(200).json({ success: true, count: 0 });
+            } else {
+              cartProduct.count -= 1;
+              return cartProduct.save();
+            }
           } else {
             console.log('Product not found in the cart');
             return res.status(404).json({ message: 'Product not found in the cart' });
           }
         })
-        .then(() => {
-          console.log('Product deleted from the cart');
-          return res.status(200).json({ message: 'Product deleted from the cart' });
+        .then((result) => {
+          if (!result) {
+            return res.status(200).json({ success: true, count: 0 });
+          } else {
+            return res.status(200).json({ message: 'Product deleted from the cart', count: result.count });
+          }
         })
         .catch(error => {
           console.error('Error deleting product from the cart:', error);
@@ -161,8 +175,70 @@ async function removeFromCart(req, res) {
   });
 }
 
+async function removeFromCart(req, res) {
+  const userId = req.query.userId;
+  const productIds = req.body.productsIds;
+  console.log(userId, productIds)
+  try {
+    const cart = await Cart.findOne({ where: { userId } });
+    let deletedRows = 0;
+    if (productIds.length !== 0) {
+      deletedRows = await Cart_Item.destroy({
+        where: {
+          [Op.and]: [
+            { cartId: cart.id },
+            { productId: { [Op.in]: productIds } },
+          ],
+        },
+      });
+    } else {
+      deletedRows = await Cart_Item.destroy({ where: { cartId: cart.id } })
+    }
+    return res.status(200).json({ message: `${deletedRows} record(s) deleted successfully.` });
+  } catch (error) {
+    console.error('Error deleting records:', error);
+    res.status(500).json({ error: 'Internal Server Error' });
+  }
+
+  // Cart.findOne({ where: { userId } })
+  // .then(cart => {
+  //   if (cart) {
+  //     Cart_Item.destroy({where: {
+  //       [Op.and]: [
+  //         { cartId: cartIdToDelete },
+  //         { productId: { [Op.in]: productIdsToDelete } },
+  //       ],
+  //     } })
+  //       .then(cartProduct => {
+  //         if (cartProduct) {
+  //           return cartProduct.destroy();
+  //         } else {
+  //           console.log('Product not found in the cart');
+  //           return res.status(404).json({ message: 'Product not found in the cart' });
+  //         }
+  //       })
+  //       .then(() => {
+  //         console.log('Product deleted from the cart');
+  //         return res.status(200).json({ message: 'Product deleted from the cart' });
+  //       })
+  //       .catch(error => {
+  //         console.error('Error deleting product from the cart:', error);
+  //         return res.status(500).json({ message: 'Failed to delete product from the cart', error });
+  //       });
+  //   } else {
+  //     console.log('User does not have a cart');
+  //     return res.status(404).json({ message: 'User does not have a cart' });
+  //   }
+  // })
+  // .catch(error => {
+  //   console.error('Error retrieving user cart:', error);
+  //   return res.status(500).json({ message: 'Failed to retrieve user cart', error });
+  // });
+}
+
 module.exports = {
   showCart,
   addToCart,
+  updateCartItem,
   removeFromCart,
 }

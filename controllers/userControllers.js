@@ -6,9 +6,9 @@ const { generateAccessToken } = require('../utils/generateAccessToken');
 
 async function register(req, res) {
     const { error } = registerSchema.validate(req.body);
-
+    
     if (error) {
-        res.status(400).json(error.details);
+        res.status(400).json({error: error.details});
         return;
     }
 
@@ -62,9 +62,8 @@ function login(req, res) {
             if (!isPasswordValid) {
                 return res.status(401).json({ error: 'Invalid email or password' });
             }
-        
             const token = generateAccessToken(user.id, user.email, user.role);
-            return res.status(200).json({ message: 'Login successful', jwt: token, role: user.role, name: user.name });
+            return res.status(200).json({ message: 'Login successful', jwt: token, role: user.role, name: user.firstname, id: user.id });
         });
     })
     .catch(error => {
@@ -73,7 +72,36 @@ function login(req, res) {
     });
 }
 
+async function getOne(req, res) {
+    const { id } = req.params;
+    try {
+        const user = await User.findOne({ 
+            where: { id }
+        });
+
+        console.log('user', user)
+        res.status(200).json(user);
+      } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Internal Server Error' });
+      }
+}
+
+async function getAll(req, res) {
+    try {
+        const users = await User.findAll({
+            attributes: { exclude: ['password', 'createdAt', 'updatedAt'] }
+          });
+        res.status(200).json(users);
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Internal Server Error' });
+    }
+}
+
 module.exports = {
     register,
-    login
+    login,
+    getOne,
+    getAll
 }

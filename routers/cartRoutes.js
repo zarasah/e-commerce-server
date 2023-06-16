@@ -6,7 +6,7 @@ const { authenticateToken } = require('../middlewares/authenticateToken');
 
 cartRt.get('/:id', authenticateToken, cartCtrl.getOne);  // admin
 cartRt.get('/', authenticateToken, cartCtrl.getAll);    //admin
-cartRt.post('/create', authenticateToken, cartCtrl.createCart);
+cartRt.post('/create', cartCtrl.createCart);
 cartRt.delete('/delete', authenticateToken, cartCtrl.deleteCart);
 // cartRt.put('/update', cartCtrl.updateCart);
 

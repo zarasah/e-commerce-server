@@ -3,14 +3,13 @@ const { Product } = require('../models');
 const categorySchema = require('../validation/categorySchema');
 
 async function getAll(req, res) {
-    console.log('ALL')
     try {
         const categories = await Category.findAll(); 
         res.status(200).json(categories);
-      } catch (err) {
+    } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Internal Server Error' });
-      }
+    }
 }
 
 async function getOne(req, res) {
@@ -27,7 +26,7 @@ async function getOne(req, res) {
 
 async function createCategory(req, res) {
     const { error } = categorySchema.validate(req.body);
-
+    console.log(error, 'error')
     if (error) {
         return res.status(400).json(error.details);
     }
@@ -41,10 +40,10 @@ async function createCategory(req, res) {
             return res.status(409).json({ message: 'Category already exists.' });
         }
         
-        await Category.create({
+        const createdCategory = await Category.create({
             name
         })
-        res.status(201).json({ message: 'Category created' });
+        res.status(201).json({ message: 'Category created', data: createdCategory });
     } catch(error) {
         console.error(error);
         return res.status(500).json({ error: 'Failed to create category' });
@@ -71,7 +70,7 @@ async function updateCategory(req, res) {
 
     try {
         await category.save();
-        return res.status(200).json({ message: 'Category name updated successfully' });
+        return res.status(200).json({ message: 'Category name updated successfully', data: category });
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: 'Failed to update category name' });
@@ -82,11 +81,10 @@ async function deleteCategory(req, res) {
     const { id } = req.query;
 
     try {
+        const deletedProducts = await Product.destroy({ where: { categoryId: id } });
         const deletedCategory = await Category.destroy({ where: { id } });
       
-        if (deletedCategory > 0) {
-          const deletedProducts = await Product.destroy({ where: { categoryId: id } });
-      
+        if (deletedCategory > 0) {      
           return res.status(200).json({ message: `Category and ${deletedProducts} associated products deleted successfully`});
         } else {
             return res.status(404).json({ error: 'Category not found' });
