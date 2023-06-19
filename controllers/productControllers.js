@@ -3,22 +3,57 @@ const productSchema = require('../validation/productSchema');
 const fs = require('fs');
 
 async function getAll(req, res) {
+    const categoryId =  req.query.category;
+
     try {
-        const products = await Product.findAll({
-            include: [
-                {
-                  model: Category,
-                  attributes: ['name']
-                }
-              ],
-            attributes: { exclude: ['categoryId'] }
-        }); 
-        res.status(200).json(products);
+        if (categoryId)  {
+            const products = await Product.findAll({
+                where: { categoryId },
+                include: [
+                    {
+                      model: Category,
+                      attributes: ['name']
+                    }
+                  ],
+                attributes: { exclude: ['categoryId', 'createdAt', 'updatedAt'] }
+            }); 
+            res.status(200).json(products);
+        } else {
+            const products = await Product.findAll({
+                include: [
+                    {
+                      model: Category,
+                      attributes: ['name']
+                    }
+                  ],
+                attributes: { exclude: ['categoryId', 'createdAt', 'updatedAt'] }
+            }); 
+            res.status(200).json(products);
+        }
       } catch (err) {
         console.error(err);
         res.status(500).json({ message: 'Internal Server Error' });
       }
 }
+
+// async function getAll(req, res) {
+//     const categoryId =  req.query.category;
+//     try {
+//         const products = await Product.findAll({
+//             include: [
+//                 {
+//                   model: Category,
+//                   attributes: ['name']
+//                 }
+//               ],
+//             attributes: { exclude: ['categoryId', 'createdAt', 'updatedAt'] }
+//         }); 
+//         res.status(200).json(products);
+//       } catch (err) {
+//         console.error(err);
+//         res.status(500).json({ message: 'Internal Server Error' });
+//       }
+// }
 
 async function getOne(req, res) {
     const { id } = req.params;
@@ -70,8 +105,9 @@ async function createProduct(req, res) {
 
 async function updateProduct(req, res) {
     const {error} = productSchema.validate(req.body);
-    
+
     if (error) {
+        console.log(error)
         return res.status(400).json(error.details[0].message);   
     }
 
@@ -80,7 +116,7 @@ async function updateProduct(req, res) {
         const { name, price, quantity, description, categoryId } = req.body;
         const imgName = req.file?.filename;
         let updatedData = 0;
-
+        
         if (imgName) {
             const product = await Product.findByPk(id);
 
@@ -127,7 +163,7 @@ async function deleteProduct(req, res) {
         if (product.image) {
             const imgName = product.image.split('/').pop();
             const imgPath = './uploads/products/' + imgName;
-
+            console.log('imgPath---------------', imgPath)
             fs.unlink(imgPath, (err) => {
                 if (err) {
                 console.error(err);

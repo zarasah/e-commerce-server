@@ -3,8 +3,9 @@ const { Op } = require('sequelize');
 
 async function showCart(req, res) {
   // const userId = req.body.id; // req.user.id
+  
   const userId = req.query.userId;
-
+  
   Cart.findOne({ where: { userId } })
   .then(cart => {
     if (cart) {
@@ -59,7 +60,7 @@ async function showCart(req, res) {
 async function addToCart(req, res) {
   const userId = req.body.userId;
   const productId = req.body.productId;
-  console.log(userId, productId)
+
   Cart.findOne({ where: { userId } })
   .then((cart) => {
     if (cart) {
