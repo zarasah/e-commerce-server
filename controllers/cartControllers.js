@@ -61,26 +61,6 @@ async function createCart(req, res) {
       console.error(error);
       res.status(500).json({ message: 'Internal Server Error' });
   }
-    
-    // try {
-    //     const user = await User.findOne({ where: { id } });
-
-    //     if (!user) {
-    //         return res.status(404).json({ error: 'User not found' });
-    //     }
-
-    //     const cart = await Cart.findOne({ where: { userId: id } });
-        
-    //     if (cart) {
-    //         return res.status(409).json({ message: 'Cart already exists.' });
-    //     }
-
-    //     await Cart.create({ userId: id });
-    //     return res.status(201).json({ message: 'Cart created' });
-    // } catch (error) {
-    //     console.error(error);
-    //     res.status(500).json({ message: 'Internal Server Error' });
-    // }
 }
 
 async function deleteCart(req, res) {

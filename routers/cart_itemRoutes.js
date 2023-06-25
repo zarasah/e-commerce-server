@@ -8,7 +8,4 @@ cartItemRt.post('/addtocart', authenticateToken, cartItemCtrl.addToCart);
 cartItemRt.put('/updatecartitem', authenticateToken, cartItemCtrl.updateCartItem);
 cartItemRt.delete('/deletefromcart', authenticateToken, cartItemCtrl.removeFromCart);
 
-// cartItemRt.get('/', cartItemCtrl.getAll);
-// cartItemRt.put('/update', cartItemCtrl.updateCart);  add patch for changing count
-
 module.exports = cartItemRt;

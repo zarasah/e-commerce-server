@@ -36,25 +36,6 @@ async function getAll(req, res) {
       }
 }
 
-// async function getAll(req, res) {
-//     const categoryId =  req.query.category;
-//     try {
-//         const products = await Product.findAll({
-//             include: [
-//                 {
-//                   model: Category,
-//                   attributes: ['name']
-//                 }
-//               ],
-//             attributes: { exclude: ['categoryId', 'createdAt', 'updatedAt'] }
-//         }); 
-//         res.status(200).json(products);
-//       } catch (err) {
-//         console.error(err);
-//         res.status(500).json({ message: 'Internal Server Error' });
-//       }
-// }
-
 async function getOne(req, res) {
     const { id } = req.params;
 
@@ -163,7 +144,7 @@ async function deleteProduct(req, res) {
         if (product.image) {
             const imgName = product.image.split('/').pop();
             const imgPath = './uploads/products/' + imgName;
-            console.log('imgPath---------------', imgPath)
+
             fs.unlink(imgPath, (err) => {
                 if (err) {
                 console.error(err);

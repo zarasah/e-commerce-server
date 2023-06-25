@@ -40,21 +40,6 @@ async function showCart(req, res) {
     console.error('Error retrieving user cart:', error);
     res.status(500).json({ message: 'Failed to retrieve user cart', error });
   });
-
-  // try {
-  //   const cart = await Cart.findOne({ where: { userId } });
-  
-  //   if (!cart) {
-  //     return res.status(404).json({ message: 'Cart not found' });
-  //   }
-
-  //   const products = await cart.getProducts();
-  
-  //   res.status(200).json({ products });
-  // } catch (error) {
-  //   console.error('Error retrieving products from cart:', error);
-  //   res.status(500).json({ error: 'Failed to retrieve products from cart' });
-  // }
 }
 
 async function addToCart(req, res) {
@@ -100,36 +85,6 @@ async function addToCart(req, res) {
     console.error('Error retrieving user cart:', error);
     res.status(500).json({ message: 'Failed to retrieve user cart', error });
   });
-  
-  // try {
-  //   const cart = await Cart.findOne({ where: {userId } });
-  
-  //   if (!cart) {
-  //     return res.status(404).json({ message: 'Cart not found' });
-  //   }
-  
-  //   const product = await Product.findByPk(productId);
-  
-  //   if (!product) {
-  //     return res.status(404).json({ message: 'Product not found' });
-  //   }
-  
-  //   const cartItem = await cart.getProducts({
-  //     where: { id: productId },
-  //     through: { attributes: ['count'] },
-  //   });
-  
-  //   if (cartItem.length === 0) {
-  //     await cart.addProduct(product, { through: { count: 1 } });
-  //   } else {
-  //     await cart.addProduct(product, { through: { count: cartItem[0].Cart_Item.count + 1 } });
-  //   }
-
-  //   res.status(200).json({ message: 'Product added to the cart' });
-  // } catch (error) {
-  //   console.error('Error adding product to cart:', error);
-  //   res.status(500).json({ error: 'Failed to add product to cart' });
-  // }
 }
 
 async function updateCartItem(req, res) {
@@ -200,41 +155,6 @@ async function removeFromCart(req, res) {
     console.error('Error deleting records:', error);
     res.status(500).json({ error: 'Internal Server Error' });
   }
-
-  // Cart.findOne({ where: { userId } })
-  // .then(cart => {
-  //   if (cart) {
-  //     Cart_Item.destroy({where: {
-  //       [Op.and]: [
-  //         { cartId: cartIdToDelete },
-  //         { productId: { [Op.in]: productIdsToDelete } },
-  //       ],
-  //     } })
-  //       .then(cartProduct => {
-  //         if (cartProduct) {
-  //           return cartProduct.destroy();
-  //         } else {
-  //           console.log('Product not found in the cart');
-  //           return res.status(404).json({ message: 'Product not found in the cart' });
-  //         }
-  //       })
-  //       .then(() => {
-  //         console.log('Product deleted from the cart');
-  //         return res.status(200).json({ message: 'Product deleted from the cart' });
-  //       })
-  //       .catch(error => {
-  //         console.error('Error deleting product from the cart:', error);
-  //         return res.status(500).json({ message: 'Failed to delete product from the cart', error });
-  //       });
-  //   } else {
-  //     console.log('User does not have a cart');
-  //     return res.status(404).json({ message: 'User does not have a cart' });
-  //   }
-  // })
-  // .catch(error => {
-  //   console.error('Error retrieving user cart:', error);
-  //   return res.status(500).json({ message: 'Failed to retrieve user cart', error });
-  // });
 }
 
 module.exports = {

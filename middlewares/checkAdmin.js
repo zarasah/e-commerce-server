@@ -9,19 +9,3 @@ const checkAdmin = (req, res, next) => {
   };
   
   module.exports = { checkAdmin };
-
-
-// const jwt = require("jsonwebtoken");
-
-// function checkAdmin(req, res, next) {
-//     const token = req.headers.authorization;
-//     const decoded = jwt.decode(token);
-
-//     if (decoded.role === 1) {
-//         next();
-//     }
-
-//     res.status(403).json({ message: 'Unauthorized' });
-// }
-
-// module.exports = { checkAdmin }
